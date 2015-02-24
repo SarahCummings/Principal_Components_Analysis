@@ -1,0 +1,31 @@
+stock<-read.table("http://www.stat.ncsu.edu/people/maity/courses/st731/S2015/AM_lecture3_T8-4.dat")
+head(stock,n=5)
+class(stock)	#data.frame
+dim(stock)		#103	5
+colnames(stock) <- c("JPMorgan","Citibank","WellsFargo","Shell","Exxon")
+n <- nrow(stock_data)
+p <- ncol(stock_data)
+
+#Sample covariance matrix S
+S<-cov(stock_data)
+pca<-prcomp(stock,center=T,scale=T)
+loadings<-pca$rotation
+eigenvectors<-pca$sd^2
+
+#Proportion of variance captured by PC1
+print(eigenvectors[1]/sum(eigenvectors))	#0.4874546
+print((eigenvectors[1]+eigenvectors[2])/sum(eigenvectors))	#0.7688572
+print((eigenvectors[1]+eigenvectors[2]+eigenvectors[3])/sum(eigenvectors)) #0.8689597
+
+#Visulization with scree plot
+screeplot(pca,type="l")	#level off after at the third component
+biplot(out)
+
+#Simutaneous Confidence Interval
+xbar <- pca$center 
+v <- eigenvectors 
+alpha <- 0.05
+fquantile <- qf(alpha, df1=p, df2=n-p, lower.tail=F)   
+I <- cbind(xbar, xbar - sqrt(fquantile * (n-1)*p/(n*(n-p))*v), xbar + sqrt(fquantile * (n-1)*p/(n*(n-p))*v))
+colnames(I) <- c("Mean","Lower", "Upper")
+print(I)
